@@ -1,0 +1,10 @@
+set(LIB_NAME CMap)
+
+aux_source_directory(. SRC_FILES)
+
+add_library(${LIB_NAME} STATIC ${SRC_FILES})
+add_library(Pathfinding::${LIB_NAME} ALIAS ${LIB_NAME})
+
+target_include_directories(${LIB_NAME} INTERFACE .)
+
+add_subdirectory(test)
