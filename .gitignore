@@ -46,3 +46,6 @@ DeckbuilderGame.iml
 
 # CMake
 CMakeGraphVizOptions.cmake
+
+# Workshop build
+build-*/
