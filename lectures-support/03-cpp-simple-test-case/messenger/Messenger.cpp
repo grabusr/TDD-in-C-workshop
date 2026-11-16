@@ -10,11 +10,13 @@ Messenger::Messenger(std::shared_ptr<ILogger> logger, std::shared_ptr<IMessageSe
     : logger{std::move(logger)}
     , service{std::move(service)}
 {
-    this->logger->log("Creating Messenger");
+    this->logger->log("Messenger Created.");
 }
 
 void Messenger::sendMessage(const std::string_view message)
 {
-    logger->log("Sending message: " + std::string{message});
+    std::string msg{"Sending message: "};
+    msg.append(message);
+    logger->log(msg);
     service->send(message);
 }

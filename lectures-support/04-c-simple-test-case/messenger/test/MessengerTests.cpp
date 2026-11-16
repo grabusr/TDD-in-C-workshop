@@ -1,4 +1,7 @@
+extern "C"
+{
 #include <Messenger.h>
+}
 
 #include <test/fakes/FakeLogger.h>
 #include <test/mocks/MessageServiceMock.h>

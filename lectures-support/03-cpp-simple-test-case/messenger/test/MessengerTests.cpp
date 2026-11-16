@@ -16,9 +16,7 @@ class MessengerTest : public Test
 protected:
     void SetUp() override
     {
-        logger = std::make_shared<ILoggerMock>();
-        // ON_CALL(*logger, log(_));
-
+        logger = std::make_shared<NiceMock<ILoggerMock>>();
         service = std::make_shared<IMessageServiceMock>();
     }
 
@@ -39,6 +37,43 @@ TEST_F(MessengerTest, SendingTest)
     // when
     const auto messenger = std::make_unique<Messenger>(logger, service);
     messenger->sendMessage(message);
+}
+
+TEST_F(MessengerTest, SendMessageToService)
+{
+    // given
+    constexpr auto message = "Hello";
+    auto messenger = Messenger(logger, service);
+
+    // expected
+    EXPECT_CALL(*service, send(StrEq(message)));
+
+    // when
+    messenger.sendMessage(message);
+}
+
+TEST_F(MessengerTest, SendMessageLogsMessageBeforeSending)
+{
+    // given
+    constexpr auto message = "Hello";
+    auto messenger = Messenger(logger, service);
+
+    // expected
+    InSequence s;
+    EXPECT_CALL(*logger, log(StrEq("Sending message: Hello")));
+    EXPECT_CALL(*service, send(_));
+
+    // when
+    messenger.sendMessage(message);
+}
+
+TEST_F(MessengerTest, MessengerLogsCreation)
+{
+    // expected
+    EXPECT_CALL(*logger, log(StrEq("Messenger Created.")));
+
+    // when
+    Messenger(logger, service);
 }
 
 } // namespace test
