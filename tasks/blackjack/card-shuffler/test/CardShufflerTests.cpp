@@ -1,5 +1,5 @@
 #include <CardShuffler.h>
-#include <RandomGeneratorMock.h>
+#include <test/mocks/RandomGeneratorMock.h>
 
 #include <gmock/gmock.h>
 

@@ -11,6 +11,8 @@ target_link_libraries(${LIB_NAME}
         PUBLIC
             Blackjack::CBlackjackGame
             Blackjack::CPlayerStrategy
+            Blackjack::CLogger
+            Blackjack::CCards
 )
 
 add_subdirectory(test)

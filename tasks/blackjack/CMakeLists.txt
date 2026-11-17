@@ -8,6 +8,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 enable_testing()
 
 add_subdirectory(cards)
+add_subdirectory(logger)
 add_subdirectory(deck-parser)
 add_subdirectory(random-generator)
 add_subdirectory(card-shuffler)

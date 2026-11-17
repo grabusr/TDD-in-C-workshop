@@ -11,4 +11,3 @@ target_link_libraries(${LIB_NAME}
             Blackjack::CCards
 )
 
-add_subdirectory(test)

@@ -11,7 +11,6 @@ target_link_libraries(${TEST_NAME}
         PRIVATE
         GTest::gmock_main
         Blackjack::CCardShuffler
-        Blackjack::CRandomGeneratorMock
 )
 
 gtest_discover_tests(${TEST_NAME})
