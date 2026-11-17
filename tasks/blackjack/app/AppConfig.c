@@ -69,7 +69,9 @@ static bool parseThreshold(const char* const text, int* const out)
 
 bool appConfigParse(const int argc, const char* const* const argv, AppConfig* const out)
 {
-    AppConfig config = {.player = PLAYER_CAUTIOUS, .deckCount = 1};
+    AppConfig config = {.player = PLAYER_CONSOLE, .deckCount = 1};
+    bool help = false;
+    bool valid = true;
     bool hasPlayer = false;
     bool hasThreshold = false;
     int threshold = 0;
@@ -78,9 +80,17 @@ bool appConfigParse(const int argc, const char* const* const argv, AppConfig* co
     {
         const char* value = NULL;
         unsigned long long number = 0;
-        if ((value = valueOf(argv[i], "--player")) != NULL)
+        if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0)
         {
-            if (strcmp(value, "cautious") == 0)
+            help = true;
+        }
+        else if ((value = valueOf(argv[i], "--player")) != NULL)
+        {
+            if (strcmp(value, "console") == 0)
+            {
+                config.player = PLAYER_CONSOLE;
+            }
+            else if (strcmp(value, "cautious") == 0)
             {
                 config.player = PLAYER_CAUTIOUS;
             }
@@ -90,7 +100,7 @@ bool appConfigParse(const int argc, const char* const* const argv, AppConfig* co
             }
             else
             {
-                return false;
+                valid = false;
             }
             hasPlayer = true;
         }
@@ -98,7 +108,7 @@ bool appConfigParse(const int argc, const char* const* const argv, AppConfig* co
         {
             if (!parseThreshold(value, &threshold))
             {
-                return false;
+                valid = false;
             }
             hasThreshold = true;
         }
@@ -106,7 +116,7 @@ bool appConfigParse(const int argc, const char* const* const argv, AppConfig* co
         {
             if (!parseUnsigned(value, &number) || number == 0u || number > SIZE_MAX)
             {
-                return false;
+                valid = false;
             }
             config.deckCount = (size_t)number;
         }
@@ -114,17 +124,27 @@ bool appConfigParse(const int argc, const char* const* const argv, AppConfig* co
         {
             if (!parseUnsigned(value, &number))
             {
-                return false;
+                valid = false;
             }
             config.hasSeed = true;
             config.seed = number;
         }
         else
         {
-            return false;
+            valid = false;
         }
     }
 
+    if (help)
+    {
+        config.help = true;
+        *out = config;
+        return true;
+    }
+    if (!valid)
+    {
+        return false;
+    }
     if (hasPlayer && hasThreshold) {
         return false;
     }
@@ -132,8 +152,11 @@ bool appConfigParse(const int argc, const char* const* const argv, AppConfig* co
         config.player = PLAYER_CUSTOM;
         config.threshold = threshold;
     }
-    else {
-        config.threshold = config.player == PLAYER_CAUTIOUS ? CAUTIOUS_THRESHOLD : RISKY_THRESHOLD;
+    else if (config.player == PLAYER_CAUTIOUS) {
+        config.threshold = CAUTIOUS_THRESHOLD;
+    }
+    else if (config.player == PLAYER_RISKY) {
+        config.threshold = RISKY_THRESHOLD;
     }
     *out = config;
     return true;

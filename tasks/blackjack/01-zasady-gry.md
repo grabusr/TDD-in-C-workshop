@@ -111,6 +111,10 @@ Decyzję „dobierz czy pasuj” podejmuje wymienna strategia. Gra nie wie, czy 
 
 Symulacja rozgrywa wiele rund wybraną strategią i porównuje wyniki.
 
+Aplikacja domyślnie używa gracza konsolowego. Inną strategię wybiera się flagą `--player=cautious|risky`
+(albo `--player-threshold=N`), a `--player=console` wybiera gracza konsolowego jawnie. Pełny opis flag wypisuje
+`--help`.
+
 ## Przykładowe rozdania
 
 Karty w talii podano od góry. Kolejność rozdania: gracz, krupier, gracz, krupier, potem dobierane karty.

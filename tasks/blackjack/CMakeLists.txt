@@ -19,6 +19,7 @@ add_subdirectory(app)
 add_subdirectory(game-model)
 add_subdirectory(player-strategy)
 add_subdirectory(threshold-strategy)
+add_subdirectory(console-strategy)
 add_subdirectory(simulation)
 
 add_custom_target(RunAllTests

@@ -229,25 +229,16 @@ TEST_F(AppConfigParse, AppConfigParseAcceptsNoArguments)
     EXPECT_THAT(accepted, IsTrue());
 }
 
-TEST_F(AppConfigParse, AppConfigParseSelectsCautiousPlayerByDefault)
+TEST_F(AppConfigParse, AppConfigParseSelectsConsolePlayerByDefault)
 {
     // when
     parse();
 
     // then
-    EXPECT_THAT(config.player, Eq(PLAYER_CAUTIOUS));
+    EXPECT_THAT(config.player, Eq(PLAYER_CONSOLE));
 }
 
-TEST_F(AppConfigParse, AppConfigParseUsesThresholdTwelveByDefault)
-{
-    // when
-    parse();
-
-    // then
-    EXPECT_THAT(config.threshold, Eq(12));
-}
-
-TEST_F(AppConfigParse, AppConfigParseSelectsCautiousPlayerWhenOnlyDecksGiven)
+TEST_F(AppConfigParse, AppConfigParseSelectsConsolePlayerWhenOnlyDecksGiven)
 {
     // given
     args.push_back("--decks=2");
@@ -256,7 +247,90 @@ TEST_F(AppConfigParse, AppConfigParseSelectsCautiousPlayerWhenOnlyDecksGiven)
     parse();
 
     // then
-    EXPECT_THAT(config.player, Eq(PLAYER_CAUTIOUS));
+    EXPECT_THAT(config.player, Eq(PLAYER_CONSOLE));
+}
+
+TEST_F(AppConfigParse, AppConfigParseSelectsConsolePlayerWhenFlagGiven)
+{
+    // given
+    args.push_back("--player=console");
+
+    // when
+    parse();
+
+    // then
+    EXPECT_THAT(config.player, Eq(PLAYER_CONSOLE));
+}
+
+TEST_F(AppConfigParse, AppConfigParseRejectsConsolePlayerWithThreshold)
+{
+    // given
+    args.push_back("--player=console");
+    args.push_back("--player-threshold=15");
+
+    // when
+    const bool accepted = parse();
+
+    // then
+    EXPECT_THAT(accepted, IsFalse());
+}
+
+TEST_F(AppConfigParse, AppConfigParseKeepsHelpOffByDefault)
+{
+    // when
+    parse();
+
+    // then
+    EXPECT_THAT(config.help, IsFalse());
+}
+
+TEST_F(AppConfigParse, AppConfigParseSetsHelpWhenHelpFlagGiven)
+{
+    // given
+    args.push_back("--help");
+
+    // when
+    parse();
+
+    // then
+    EXPECT_THAT(config.help, IsTrue());
+}
+
+TEST_F(AppConfigParse, AppConfigParseSetsHelpWhenShortHelpFlagGiven)
+{
+    // given
+    args.push_back("-h");
+
+    // when
+    parse();
+
+    // then
+    EXPECT_THAT(config.help, IsTrue());
+}
+
+TEST_F(AppConfigParse, AppConfigParseAcceptsHelpFlag)
+{
+    // given
+    args.push_back("--help");
+
+    // when
+    const bool accepted = parse();
+
+    // then
+    EXPECT_THAT(accepted, IsTrue());
+}
+
+TEST_F(AppConfigParse, AppConfigParseAcceptsHelpFlagAlongsideInvalidFlag)
+{
+    // given
+    args.push_back("--bogus");
+    args.push_back("--help");
+
+    // when
+    const bool accepted = parse();
+
+    // then
+    EXPECT_THAT(accepted, IsTrue());
 }
 TEST_F(AppConfigParse, AppConfigParseRejectsUnknownPlayer)
 {

@@ -1,6 +1,7 @@
 #include "App.h"
 
 #include <CardShuffler.h>
+#include <ConsolePlayerStrategy.h>
 #include <DeckBuilder.h>
 #include <SeededRandom.h>
 #include <Simulation.h>
@@ -30,6 +31,7 @@ static void logMessage(const Logger* const logger, const char* const format, ...
 static const char* playerName(const PlayerKind player)
 {
     switch (player) {
+        case PLAYER_CONSOLE: return "console";
         case PLAYER_CAUTIOUS: return "cautious";
         case PLAYER_RISKY: return "risky";
         case PLAYER_CUSTOM: return "custom";
@@ -37,7 +39,8 @@ static const char* playerName(const PlayerKind player)
     return "unknown";
 }
 
-bool appPlay(const AppConfig* const config, const uint64_t seed, const Logger* const logger, Score* const score)
+bool appPlay(const AppConfig* const config, const uint64_t seed, FILE* const input, const Logger* const logger,
+             Score* const score)
 {
     CardList deck = deckBuild(config->deckCount);
     if (deck.cards == NULL) {
@@ -48,25 +51,35 @@ bool appPlay(const AppConfig* const config, const uint64_t seed, const Logger* c
     seededRandomInit(&random, seed);
     cardListShuffle(&deck, &random.generator);
 
-    ThresholdPlayerStrategy strategy;
-    thresholdPlayerStrategyInit(&strategy, config->threshold);
+    ConsolePlayerStrategy console;
+    ThresholdPlayerStrategy threshold;
+    const PlayerStrategy* strategy = &threshold.strategy;
+    if (config->player == PLAYER_CONSOLE) {
+        consolePlayerStrategyInit(&console, input, logger);
+        strategy = &console.strategy;
+    }
+    else {
+        thresholdPlayerStrategyInit(&threshold, config->threshold);
+    }
 
-    *score = simulationRun(&deck, &strategy.strategy, logger);
+    *score = simulationRun(&deck, strategy, logger);
     cardListFree(&deck);
     return true;
 }
 
-int appRun(const AppConfig* const config, const uint64_t fallbackSeed, const Logger* const logger)
+int appRun(const AppConfig* const config, const uint64_t fallbackSeed, FILE* const input, const Logger* const logger)
 {
     const uint64_t seed = config->hasSeed ? config->seed : fallbackSeed;
 
     logMessage(logger, "player: %s", playerName(config->player));
-    logMessage(logger, "threshold: %d", config->threshold);
+    if (config->player != PLAYER_CONSOLE) {
+        logMessage(logger, "threshold: %d", config->threshold);
+    }
     logMessage(logger, "decks: %zu", config->deckCount);
     logMessage(logger, "seed: %llu", (unsigned long long)seed);
 
     Score score;
-    if (!appPlay(config, seed, logger, &score)) {
+    if (!appPlay(config, seed, input, logger, &score)) {
         logMessage(logger, "Cannot create the deck");
         return EXIT_FAILURE;
     }
@@ -75,4 +88,23 @@ int appRun(const AppConfig* const config, const uint64_t fallbackSeed, const Log
     logMessage(logger, "dealer wins: %zu", score.dealerWins);
     logMessage(logger, "pushes: %zu", score.pushes);
     return EXIT_SUCCESS;
+}
+
+void appPrintUsage(const char* const program, const Logger* const logger)
+{
+    logMessage(logger, "Usage: %s [--player=console|cautious|risky | --player-threshold=N] [--decks=N] [--seed=N]",
+               program);
+    logMessage(logger, "       %s --help", program);
+    logMessage(logger, "");
+    logMessage(logger, "Plays blackjack against the dealer until the shoe runs out.");
+    logMessage(logger, "");
+    logMessage(logger, "Options:");
+    logMessage(logger, "  --player=console|cautious|risky  who plays: you (default), a player hitting up to 11 or");
+    logMessage(logger, "                                   one hitting below 17 like the dealer");
+    logMessage(logger, "  --player-threshold=N             automatic player standing from hand value N (1-21)");
+    logMessage(logger, "  --decks=N                        number of 52-card decks in the shoe (default 1)");
+    logMessage(logger, "  --seed=N                         seed of the shuffle, the same seed gives the same game");
+    logMessage(logger, "  -h, --help                       show this help and exit");
+    logMessage(logger, "");
+    logMessage(logger, "Console player controls: h = hit, s = stand, confirmed with Enter.");
 }

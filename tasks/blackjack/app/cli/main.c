@@ -24,12 +24,19 @@ static uint64_t randomSeed(void)
 int main(const int argc, const char* const* const argv)
 {
     AppConfig config;
-    if (!appConfigParse(argc, argv, &config))
-    {
-        fprintf(stderr, "Usage: %s [--player=cautious|risky | --player-threshold=N] [--decks=N] [--seed=N]\n", argv[0]);
-        return EXIT_FAILURE;
-    }
     ConsoleLogger console;
     consoleLoggerInit(&console, stdout);
-    return appRun(&config, randomSeed(), &console.logger);
+    if (!appConfigParse(argc, argv, &config))
+    {
+        ConsoleLogger errors;
+        consoleLoggerInit(&errors, stderr);
+        appPrintUsage(argv[0], &errors.logger);
+        return EXIT_FAILURE;
+    }
+    if (config.help)
+    {
+        appPrintUsage(argv[0], &console.logger);
+        return EXIT_SUCCESS;
+    }
+    return appRun(&config, randomSeed(), stdin, &console.logger);
 }

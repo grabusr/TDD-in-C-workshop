@@ -16,6 +16,7 @@ target_link_libraries(${LIB_NAME}
         Blackjack::CSeededRandom
         Blackjack::CCardShuffler
         Blackjack::CThresholdPlayerStrategy
+        Blackjack::CConsolePlayerStrategy
         Blackjack::CBlackjackSimulation
 )
 
