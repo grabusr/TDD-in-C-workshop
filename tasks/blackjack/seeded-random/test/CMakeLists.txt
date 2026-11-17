@@ -13,4 +13,4 @@ target_link_libraries(${TEST_NAME}
             Blackjack::CSeededRandom
 )
 
-gtest_discover_tests(${TEST_NAME})
+gtest_discover_tests(${TEST_NAME} PROPERTIES LABELS "unit")

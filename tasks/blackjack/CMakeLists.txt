@@ -29,3 +29,19 @@ add_custom_target(RunAllTests
     USES_TERMINAL
     COMMENT "Building all targets and running all CTest tests"
 )
+
+add_custom_target(RunUnitTests
+    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target all
+    COMMAND ${CMAKE_CTEST_COMMAND} --test-dir ${CMAKE_BINARY_DIR} --label-regex "^unit$" --output-on-failure
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    USES_TERMINAL
+    COMMENT "Building all targets and running unit tests"
+)
+
+add_custom_target(RunMemoryTests
+    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target all
+    COMMAND ${CMAKE_CTEST_COMMAND} --test-dir ${CMAKE_BINARY_DIR} --label-regex "^memory$" --output-on-failure
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    USES_TERMINAL
+    COMMENT "Building all targets and running memory tests"
+)
