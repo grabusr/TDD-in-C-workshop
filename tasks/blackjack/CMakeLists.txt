@@ -9,6 +9,7 @@ enable_testing()
 
 add_subdirectory(cards)
 add_subdirectory(logger)
+add_subdirectory(console-logger)
 add_subdirectory(deck-parser)
 add_subdirectory(random-generator)
 add_subdirectory(card-shuffler)
