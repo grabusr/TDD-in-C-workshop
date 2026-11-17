@@ -9,6 +9,8 @@ enable_testing()
 
 add_subdirectory(cards)
 add_subdirectory(deck-parser)
+add_subdirectory(random-generator)
+add_subdirectory(card-shuffler)
 
 add_custom_target(RunAllTests
     COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target all

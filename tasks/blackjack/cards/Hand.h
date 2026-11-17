@@ -1,25 +1,25 @@
 #pragma once
 
 #include <Card.h>
-
 #include <stddef.h>
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 /// 22 cards is the longest hand that does not bust: 4 aces, 4 twos and 3 threes sum to 21.
 #define HAND_MAX_CARDS 22u
 
-typedef struct Hand
-{
-    Card cards[HAND_MAX_CARDS];
-    size_t count;
-} Hand;
+    typedef struct Hand
+    {
+        Card cards[HAND_MAX_CARDS];
+        size_t count;
+    } Hand;
 
-/// Returns blackjack value of the hand: aces count as 11 when it does not exceed 21, otherwise as 1.
-/// Only first `count` cards are taken into account. Empty hand has value 0.
-int handValue(const Hand* hand);
+    /// Returns blackjack value of the hand: aces count as 11 when it does not exceed 21, otherwise as 1.
+    /// Only first `count` cards are taken into account. Empty hand has value 0.
+    int handValue(const Hand* hand);
 
 #ifdef __cplusplus
 }
