@@ -9,3 +9,11 @@ enable_testing()
 
 add_subdirectory(cards)
 add_subdirectory(deck-parser)
+
+add_custom_target(RunAllTests
+    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target all
+    COMMAND ${CMAKE_CTEST_COMMAND} --test-dir ${CMAKE_BINARY_DIR} --output-on-failure
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    USES_TERMINAL
+    COMMENT "Building all targets and running all CTest tests"
+)

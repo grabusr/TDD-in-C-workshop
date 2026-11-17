@@ -1,10 +1,5 @@
 #pragma once
 
-/*
- * Force-included (-include) before every line of Map.c in the test build.
- * <stdlib.h> is included first, so its own malloc/calloc/free declarations stay untouched,
- * and its include guard prevents re-parsing when Map.c includes it again.
- */
 #include <stdlib.h>
 
 #ifdef __cplusplus
