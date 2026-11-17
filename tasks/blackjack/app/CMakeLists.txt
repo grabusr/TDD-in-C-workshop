@@ -21,4 +21,5 @@ target_link_libraries(${LIB_NAME}
 )
 
 add_subdirectory(test)
+add_subdirectory(memory-test)
 add_subdirectory(cli)
