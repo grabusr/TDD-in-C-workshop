@@ -13,6 +13,7 @@ add_subdirectory(random-generator)
 add_subdirectory(card-shuffler)
 add_subdirectory(game-model)
 add_subdirectory(player-strategy)
+add_subdirectory(threshold-strategy)
 add_subdirectory(simulation)
 
 add_custom_target(RunAllTests
