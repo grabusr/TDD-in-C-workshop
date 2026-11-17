@@ -11,6 +11,9 @@ add_subdirectory(cards)
 add_subdirectory(deck-parser)
 add_subdirectory(random-generator)
 add_subdirectory(card-shuffler)
+add_subdirectory(game-model)
+add_subdirectory(player-strategy)
+add_subdirectory(simulation)
 
 add_custom_target(RunAllTests
     COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target all

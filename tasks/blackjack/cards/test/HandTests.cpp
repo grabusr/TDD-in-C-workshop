@@ -238,4 +238,64 @@ TEST_F(HandValue, HandValueSumsFullHandOfTwentyTwoCards)
     // then
     EXPECT_THAT(value, Eq(42));
 }
+
+namespace
+{
+class HandOperations : public Test
+{
+protected:
+    Hand hand{};
+};
+} // namespace
+
+TEST_F(HandOperations, HandAddCardAppendsCardToHand)
+{
+    // given
+    hand = {{{RANK_TWO}}, 1};
+
+    // when
+    const bool added = handAddCard(&hand, Card{RANK_NINE});
+
+    // then
+    EXPECT_THAT(added, IsTrue());
+    EXPECT_THAT(hand.count, Eq(2u));
+    EXPECT_THAT(hand.cards[1].rank, Eq(RANK_NINE));
+}
+
+TEST_F(HandOperations, HandAddCardRejectsCardWhenHandIsFull)
+{
+    // given
+    hand.count = HAND_MAX_CARDS;
+
+    // when
+    const bool added = handAddCard(&hand, Card{RANK_NINE});
+
+    // then
+    EXPECT_THAT(added, IsFalse());
+    EXPECT_THAT(hand.count, Eq(HAND_MAX_CARDS));
+}
+
+TEST_F(HandOperations, HandIsBustReturnsTrueWhenValueAboveTwentyOne)
+{
+    // given
+    hand = {{{RANK_KING}, {RANK_QUEEN}, {RANK_TWO}}, 3};
+
+    // when
+    const bool bust = handIsBust(&hand);
+
+    // then
+    EXPECT_THAT(bust, IsTrue());
+}
+
+TEST_F(HandOperations, HandIsBustReturnsFalseWhenValueIsTwentyOne)
+{
+    // given
+    hand = {{{RANK_KING}, {RANK_QUEEN}, {RANK_ACE}}, 3};
+
+    // when
+    const bool bust = handIsBust(&hand);
+
+    // then
+    EXPECT_THAT(bust, IsFalse());
+}
 } // namespace test

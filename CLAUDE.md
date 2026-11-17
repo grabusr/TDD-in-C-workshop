@@ -1,4 +1,6 @@
-# Testing convention
+## Project build
+
+Build project in docker image.
 
 ## TDD Workflow
 

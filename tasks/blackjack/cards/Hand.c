@@ -20,3 +20,18 @@ int handValue(const Hand* const hand)
 
     return (hasAce && sum + 10 <= 21) ? sum + 10 : sum;
 }
+
+bool handAddCard(Hand* const hand, const Card card)
+{
+    if (hand->count >= HAND_MAX_CARDS) {
+        return false;
+    }
+
+    hand->cards[hand->count++] = card;
+    return true;
+}
+
+bool handIsBust(const Hand* const hand)
+{
+    return handValue(hand) > 21;
+}

@@ -1,6 +1,8 @@
 #pragma once
 
-#include <Card.h>
+#include "Card.h"
+
+#include <stdbool.h>
 #include <stddef.h>
 
 #ifdef __cplusplus
@@ -20,6 +22,12 @@ extern "C"
     /// Returns blackjack value of the hand: aces count as 11 when it does not exceed 21, otherwise as 1.
     /// Only first `count` cards are taken into account. Empty hand has value 0.
     int handValue(const Hand* hand);
+
+    /// Appends the card to the hand. Returns false and leaves the hand untouched when the hand is full.
+    bool handAddCard(Hand* hand, Card card);
+
+    /// Returns true when the hand value exceeds 21.
+    bool handIsBust(const Hand* hand);
 
 #ifdef __cplusplus
 }

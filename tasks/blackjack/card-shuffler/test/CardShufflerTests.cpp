@@ -26,7 +26,7 @@ class CardShuffler : public Test
 protected:
     void SetUp() override
     {
-        ON_CALL(generator, next).WillByDefault([this](size_t, size_t) {
+        ON_CALL(generator, next(_, _)).WillByDefault([this](size_t, size_t) {
             return drawnIndexes[drawCount++];
         });
     }
@@ -44,7 +44,7 @@ TEST_F(CardShuffler, CardListShuffleDoesNotUseGeneratorWhenListIsEmpty)
     CardList list{nullptr, 0};
 
     // expected
-    EXPECT_CALL(generator, next).Times(0);
+    EXPECT_CALL(generator, next(_, _)).Times(0);
 
     // when
     cardListShuffle(&list, &generator.mock);
@@ -57,7 +57,7 @@ TEST_F(CardShuffler, CardListShuffleDoesNotUseGeneratorWhenListHasOneCard)
     CardList list{cards.data(), cards.size()};
 
     // expected
-    EXPECT_CALL(generator, next).Times(0);
+    EXPECT_CALL(generator, next(_, _)).Times(0);
 
     // when
     cardListShuffle(&list, &generator.mock);
@@ -71,7 +71,7 @@ TEST_F(CardShuffler, CardListShuffleUsesGeneratorOncePerCardWhenListHasMoreThanO
     drawnIndexes = {0, 1, 2};
 
     // expected
-    EXPECT_CALL(generator, next).Times(3);
+    EXPECT_CALL(generator, next(_, _)).Times(3);
 
     // when
     cardListShuffle(&list, &generator.mock);
