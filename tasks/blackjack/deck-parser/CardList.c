@@ -1,13 +1,7 @@
 #include "CardList.h"
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-enum
-{
-    chunkSize = 256
-};
 
 static const char* const separators = " \t\r\n";
 
@@ -25,38 +19,22 @@ static bool parseRank(const char* const token, Rank* const out)
     return false;
 }
 
-bool cardListLoad(const char* const path, CardList* const out)
+CardList createCardListFromString(const char* const source)
 {
-    FILE* const file = fopen(path, "r");
-    if (file == NULL)
+    const CardList empty = {NULL, 0};
+
+    if (source == NULL)
     {
-        return false;
+        return empty;
     }
 
-    char* text = NULL;
-    size_t length = 0;
-    char chunk[chunkSize];
-    size_t read = 0;
-    while ((read = fread(chunk, 1, sizeof(chunk), file)) > 0)
-    {
-        char* const grown = realloc(text, length + read + 1);
-        if (grown == NULL)
-        {
-            free(text);
-            fclose(file);
-            return false;
-        }
-        text = grown;
-        memcpy(text + length, chunk, read);
-        length += read;
-        text[length] = '\0';
-    }
-    fclose(file);
-
+    const size_t length = strlen(source);
+    char* const text = malloc(length + 1);
     if (text == NULL)
     {
-        return false;
+        return empty;
     }
+    memcpy(text, source, length + 1);
 
     size_t tokens = 0;
     for (const char* cursor = text + strspn(text, separators); *cursor != '\0';
@@ -68,14 +46,14 @@ bool cardListLoad(const char* const path, CardList* const out)
     if (tokens == 0)
     {
         free(text);
-        return false;
+        return empty;
     }
 
     Card* const cards = malloc(tokens * sizeof(Card));
     if (cards == NULL)
     {
         free(text);
-        return false;
+        return empty;
     }
 
     size_t count = 0;
@@ -87,15 +65,13 @@ bool cardListLoad(const char* const path, CardList* const out)
         {
             free(cards);
             free(text);
-            return false;
+            return empty;
         }
         ++count;
     }
     free(text);
 
-    out->cards = cards;
-    out->count = count;
-    return true;
+    return (CardList){cards, count};
 }
 
 void cardListFree(CardList* const list)

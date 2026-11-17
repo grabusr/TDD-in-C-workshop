@@ -10,7 +10,7 @@ using namespace ::testing;
 
 namespace
 {
-class CardListFile : public Test
+class CardListText : public Test
 {
 protected:
     void TearDown() override
@@ -22,77 +22,126 @@ protected:
 };
 } // namespace
 
-TEST_F(CardListFile, LoadReturnsTrueForValidFile)
+TEST_F(CardListText, CreateReturnsListWithCardsForValidText)
 {
+    // given
+    const char* const text = "A K 5\n";
+
     // when
-    const bool loaded = cardListLoad(TEST_DATA_DIR "/three_cards.txt", &list);
+    list = createCardListFromString(text);
 
     // then
-    EXPECT_THAT(loaded, IsTrue());
+    EXPECT_THAT(list.cards, NotNull());
 }
 
-TEST_F(CardListFile, LoadReturnsAllCardsFromFile)
+TEST_F(CardListText, CreateReturnsAllCardsFromText)
 {
+    // given
+    const char* const text = "A K 5\n";
+
     // when
-    cardListLoad(TEST_DATA_DIR "/three_cards.txt", &list);
+    list = createCardListFromString(text);
 
     // then
     EXPECT_THAT(list.count, Eq(3u));
 }
 
-TEST_F(CardListFile, LoadReturnsCardsInFileOrder)
+TEST_F(CardListText, CreateReturnsCardsInTextOrder)
 {
+    // given
+    const char* const text = "A K 5\n";
+
     // when
-    cardListLoad(TEST_DATA_DIR "/three_cards.txt", &list);
+    list = createCardListFromString(text);
 
     // then
     EXPECT_THAT((std::vector<Card>{list.cards, list.cards + list.count}),
                 ElementsAre(Field(&Card::rank, RANK_ACE), Field(&Card::rank, RANK_KING), Field(&Card::rank, RANK_FIVE)));
 }
 
-TEST_F(CardListFile, LoadReadsCardsFromAllLines)
+TEST_F(CardListText, CreateReadsCardsFromAllLines)
 {
+    // given
+    const char* const text = "2 J\n10\n";
+
     // when
-    cardListLoad(TEST_DATA_DIR "/multiline.txt", &list);
+    list = createCardListFromString(text);
 
     // then
     EXPECT_THAT((std::vector<Card>{list.cards, list.cards + list.count}),
                 ElementsAre(Field(&Card::rank, RANK_TWO), Field(&Card::rank, RANK_JACK), Field(&Card::rank, RANK_TEN)));
 }
 
-TEST_F(CardListFile, LoadReturnsFalseWhenFileContainsUnknownRank)
+TEST_F(CardListText, CreateReadsLastCardWhenTextDoesNotEndWithNewLine)
 {
+    // given
+    const char* const text = "A K 5";
+
     // when
-    const bool loaded = cardListLoad(TEST_DATA_DIR "/invalid_card.txt", &list);
+    list = createCardListFromString(text);
 
     // then
-    EXPECT_THAT(loaded, IsFalse());
+    EXPECT_THAT((std::vector<Card>{list.cards, list.cards + list.count}),
+                ElementsAre(Field(&Card::rank, RANK_ACE), Field(&Card::rank, RANK_KING), Field(&Card::rank, RANK_FIVE)));
 }
 
-TEST_F(CardListFile, LoadReturnsFalseWhenFileIsEmpty)
+TEST_F(CardListText, CreateReturnsEmptyListWhenTextContainsUnknownRank)
 {
+    // given
+    const char* const text = "A X 5\n";
+
     // when
-    const bool loaded = cardListLoad(TEST_DATA_DIR "/empty.txt", &list);
+    list = createCardListFromString(text);
 
     // then
-    EXPECT_THAT(loaded, IsFalse());
+    EXPECT_THAT(list.cards, IsNull());
 }
 
-TEST_F(CardListFile, LoadReturnsFalseWhenFileContainsOnlyWhitespace)
+TEST_F(CardListText, CreateReturnsEmptyListWhenTextIsEmpty)
 {
+    // given
+    const char* const text = "";
+
     // when
-    const bool loaded = cardListLoad(TEST_DATA_DIR "/whitespace_only.txt", &list);
+    list = createCardListFromString(text);
 
     // then
-    EXPECT_THAT(loaded, IsFalse());
+    EXPECT_THAT(list.cards, IsNull());
 }
 
-TEST_F(CardListFile, LoadReturnsFalseWhenFileIsMissing)
+TEST_F(CardListText, CreateReturnsEmptyListWhenTextContainsOnlyWhitespace)
 {
+    // given
+    const char* const text = "   \n\t \n";
+
     // when
-    const bool loaded = cardListLoad(TEST_DATA_DIR "/missing.txt", &list);
+    list = createCardListFromString(text);
 
     // then
-    EXPECT_THAT(loaded, IsFalse());
+    EXPECT_THAT(list.cards, IsNull());
+}
+
+TEST_F(CardListText, CreateReturnsEmptyListWhenTextIsNull)
+{
+    // given
+    const char* const text = nullptr;
+
+    // when
+    list = createCardListFromString(text);
+
+    // then
+    EXPECT_THAT(list.cards, IsNull());
+}
+
+TEST_F(CardListText, CreateReturnsZeroCountWhenTextContainsUnknownRank)
+{
+    // given
+    const char* const text = "A X 5\n";
+
+    // when
+    list = createCardListFromString(text);
+
+    // then
+    EXPECT_THAT(list.count, Eq(0u));
 }
 } // namespace test

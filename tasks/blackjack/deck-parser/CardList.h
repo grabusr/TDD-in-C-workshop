@@ -15,9 +15,10 @@ typedef struct CardList
     size_t count;
 } CardList;
 
-/// Loads cards from a text file with whitespace separated ranks: A 2 3 4 5 6 7 8 9 10 J Q K.
-/// Returns false when file cannot be opened, is empty or contains unknown rank.
-bool cardListLoad(const char* path, CardList* out);
+/// Creates card list from text with whitespace separated ranks: A 2 3 4 5 6 7 8 9 10 J Q K.
+/// Returns empty list (cards == NULL, count == 0) when text is NULL, empty, contains only whitespace
+/// or contains unknown rank. Returned list must be released with cardListFree.
+CardList createCardListFromString(const char* text);
 
 /// Releases memory of loaded list. Safe to call on zero initialized list.
 void cardListFree(CardList* list);
